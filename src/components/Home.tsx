@@ -13,6 +13,7 @@ import { useState } from 'react';
 import Header from './Header';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import Cart from './Cart';
 
 const Quota = styled(Typography)(({ theme }) => ({
 	...theme.typography.h2,
@@ -48,7 +49,7 @@ function Home() {
 
 		const newQuota = enablePercentage
 			? Math.round((quota - amount * 0.7) * 100) / 100
-			: Math.round((quota - amount)  * 100) / 100;
+			: Math.round((quota - amount) * 100) / 100;
 		setNextQuota(newQuota);
 	};
 
@@ -71,11 +72,13 @@ function Home() {
 					<Grid item xs={12} mt={4}>
 						<Quota>{quota}€</Quota>
 					</Grid>
-						<Grid item xs={12}>
-                             <NextQuota>
-								{amount && !enableChangeQuota ? `Neues Kontingent: ${nextQuota}€` : '\u2060'}
-							</NextQuota>
-						</Grid>
+					<Grid item xs={12}>
+						<NextQuota>
+							{amount && !enableChangeQuota
+								? `Neues Kontingent: ${nextQuota}€`
+								: '\u2060'}
+						</NextQuota>
+					</Grid>
 					<Grid item mt={1} xs={7}>
 						<TextField
 							type="number"
@@ -141,6 +144,9 @@ function Home() {
 								label="Kontigent ändern"
 							/>
 						</FormGroup>
+					</Grid>
+					<Grid item xs={12}>
+						<Cart />
 					</Grid>
 				</Grid>
 			</Box>
