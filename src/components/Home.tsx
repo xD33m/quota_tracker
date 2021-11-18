@@ -133,7 +133,12 @@ function Home() {
 							fullWidth
 							onKeyPress={(e) => {
 								if (e.key === 'Enter') {
-									enableChangeQuota ? setQuota(amount) : addToCart();
+									if(enableChangeQuota){
+										setQuota(amount);
+										setAmount('');
+									}else{
+										addToCart();
+									} 
 								}
 							}}
 						/>
@@ -144,7 +149,7 @@ function Home() {
 								startIcon={<AddCircleIcon />}
 								color="info"
 								variant="contained"
-								onClick={() => {setQuota(amount)}}
+								onClick={() => {setQuota(amount); setAmount('');}}
 								fullWidth
 								style={{ height: '53px' }}
 							>
