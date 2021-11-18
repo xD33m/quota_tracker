@@ -10,15 +10,17 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useState } from 'react';
-import Header from './Header';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import Cart from './Cart';
+import Cart, { ChipData } from './Cart';
+import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
+import Fab from '@mui/material/Fab';
+import ShoppingHistory, { HistoryItem } from './ShoppingHistory';
 
 const Quota = styled(Typography)(({ theme }) => ({
 	...theme.typography.h2,
 	textAlign: 'center',
-	color: theme.palette.text.secondary,
+	color: theme.palette.success.main,
 }));
 
 const NextQuota = styled(Typography)(({ theme }) => ({
@@ -33,15 +35,41 @@ function Home() {
 	const [amount, setAmount] = useState<any>('');
 	const [enablePercentage, setEnablePercentage] = useState(true);
 	const [enableChangeQuota, setEnableChangeQuota] = useState(false);
+	const [chipData, setChipData] = useState<ChipData[]>([]);
+	const [shoppingHistory, setShoppingHistory] = useState<HistoryItem[]>([]);
+
+	const handleChipDelete = (chipToDelete: ChipData) => () => {
+		setQuota(Number(quota) + Number(chipToDelete.cost));
+		setChipData((chips) =>
+			chips.filter((chip) => chip.key !== chipToDelete.key)
+		);
+	};
+
+	const handleHistoryItemDelete = (itemToDelete: HistoryItem) => () => {
+		setChipData(itemToDelete.chipData);
+		setShoppingHistory((history) =>
+			history.filter((item) => item.key !== itemToDelete.key)
+		);
+	};
+
+	const addToCart = () => {
+		const itemPrice = enablePercentage
+			? Math.round(amount * 0.7 * 100) / 100
+			: Math.round(amount * 100) / 100;
+
+		const newChip: ChipData = {
+			key: Date.now(),
+			cost: itemPrice,
+		};
+
+		setQuota(nextQuota);
+		setChipData((chips) => [...chips, newChip]);
+		setAmount('');
+	};
 
 	const onAmountChange = (e: any) => {
 		e.preventDefault();
 		calculateNewQuota(e.target.value);
-	};
-
-	const saveNewQuota = () => {
-		setQuota(nextQuota);
-		setAmount('');
 	};
 
 	const calculateNewQuota = (amount: number) => {
@@ -53,15 +81,25 @@ function Home() {
 		setNextQuota(newQuota);
 	};
 
-	const updateQuota = () => {
-		setQuota(amount);
-		setAmount('');
+	const saveCart = () => {
+		const totalCost = chipData.reduce((acc, item) => acc + item.cost, 0);
+		const date = new Date();
+		const dateString = `${String(date.getDate()).padStart(2, '0')}-${String(
+			date.getMonth() + 1
+		).padStart(2, '0')}-${date.getFullYear()}`;
+		const historyItem: HistoryItem = {
+			key: Date.now(),
+			dateString,
+			totalCost,
+			chipData,
+		};
+		setShoppingHistory((history) => [...history, historyItem]);
+		setChipData([]);
 	};
 
 	return (
 		<>
-			<Header />
-			<Box mt={3} px={3}>
+			<Box mt={2} px={3}>
 				<Grid
 					container
 					mx="auto"
@@ -70,12 +108,18 @@ function Home() {
 					rowSpacing={2}
 				>
 					<Grid item xs={12} mt={4}>
-						<Quota>{quota}€</Quota>
+						<Quota>
+							{Math.round((quota) * 100) / 100}€
+						</Quota>
 					</Grid>
 					<Grid item xs={12}>
 						<NextQuota>
 							{amount && !enableChangeQuota
-								? `Neues Kontingent: ${nextQuota}€`
+								? `Neues Kontingent: ${
+										Math.round(
+											(nextQuota) * 100
+										) / 100
+								  }€`
 								: '\u2060'}
 						</NextQuota>
 					</Grid>
@@ -87,6 +131,11 @@ function Home() {
 							value={amount}
 							focused
 							fullWidth
+							onKeyPress={(e) => {
+								if (e.key === 'Enter') {
+									enableChangeQuota ? addToCart() : setQuota(amount);
+								}
+							}}
 						/>
 					</Grid>
 					<Grid item mt={1} xs={4}>
@@ -95,7 +144,7 @@ function Home() {
 								startIcon={<AddCircleIcon />}
 								color="info"
 								variant="contained"
-								onClick={updateQuota}
+								onClick={() => {setQuota(amount)}}
 								fullWidth
 								style={{ height: '53px' }}
 							>
@@ -106,9 +155,10 @@ function Home() {
 								startIcon={<AddShoppingCartIcon />}
 								color="success"
 								variant="contained"
-								onClick={saveNewQuota}
+								onClick={addToCart}
 								fullWidth
 								style={{ height: '53px' }}
+								disabled={!amount}
 							>
 								Add
 							</Button>
@@ -146,8 +196,31 @@ function Home() {
 						</FormGroup>
 					</Grid>
 					<Grid item xs={12}>
-						<Cart />
+						<Cart
+							chipData={chipData}
+							handleChipDelete={handleChipDelete}
+						/>
 					</Grid>
+					<Grid item xs={12}>
+						<ShoppingHistory
+							history={shoppingHistory}
+							handleHistoryItemDelete={handleHistoryItemDelete}
+						/>
+					</Grid>
+					<Fab
+						color="primary"
+						aria-label="save"
+						style={{
+							position: 'absolute',
+							bottom: 0,
+							right: 0,
+							margin: '1rem',
+						}}
+						onClick={saveCart}
+						disabled={!chipData.length}
+					>
+						<ShoppingBasketIcon />
+					</Fab>
 				</Grid>
 			</Box>
 		</>

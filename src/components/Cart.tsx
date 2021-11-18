@@ -4,30 +4,18 @@ import Chip from '@mui/material/Chip';
 import { Box } from '@mui/material';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
-interface ChipData {
+export interface ChipData {
 	key: number;
-	label: string;
+	cost: number;
 }
 
 const ListItem = styled('li')(({ theme }) => ({
 	margin: theme.spacing(0.5),
 }));
 
-export default function Cart() {
-	const [chipData, setChipData] = React.useState<readonly ChipData[]>([
-		{ key: 0, label: '123.20€' },
-		{ key: 1, label: '10.95€' },
-		{ key: 2, label: '10.95€' },
-		{ key: 3, label: '65.95€' },
-		{ key: 4, label: '100.00€' },
-	]);
+export default function Cart(props: any) {
 
-	const handleDelete = (chipToDelete: ChipData) => () => {
-		setChipData((chips) =>
-			chips.filter((chip) => chip.key !== chipToDelete.key)
-		);
-	};
-
+	const { handleChipDelete, chipData} = props;
 	return (
 		<Box
 			sx={{
@@ -39,13 +27,13 @@ export default function Cart() {
 			}}
 			component="ul"
 		>
-			{chipData.map((data) => {
+			{chipData.map((data: ChipData) => {
 				return (
 					<ListItem key={data.key}>
 						<Chip
 							icon={<LocalOfferIcon />}
-							label={data.label}
-							onDelete={handleDelete(data)}
+							label={`${Math.round((data.cost + Number.EPSILON) * 100) / 100}€`}
+							onDelete={handleChipDelete(data)}
 						/>
 					</ListItem>
 				);
