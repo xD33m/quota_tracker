@@ -133,7 +133,7 @@ function Home() {
 							fullWidth
 							onKeyPress={(e) => {
 								if (e.key === 'Enter') {
-									enableChangeQuota ? addToCart() : setQuota(amount);
+									enableChangeQuota ? setQuota(amount) : addToCart();
 								}
 							}}
 						/>
