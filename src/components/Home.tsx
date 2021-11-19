@@ -96,7 +96,7 @@ function Home() {
 
 	return (
 		<>
-			<Box mt={2} px={3}>
+			<Box mt={5} px={3}>
 				<Grid
 					container
 					mx="auto"
