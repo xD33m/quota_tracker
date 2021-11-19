@@ -32,7 +32,7 @@ export default function Cart(props: any) {
 					<ListItem key={data.key}>
 						<Chip
 							icon={<LocalOfferIcon />}
-							label={`${Math.round((data.cost + Number.EPSILON) * 100) / 100}€`}
+							label={`${(Math.round((data.cost) * 100) / 100).toFixed(2)}€`}
 							onDelete={handleChipDelete(data)}
 						/>
 					</ListItem>

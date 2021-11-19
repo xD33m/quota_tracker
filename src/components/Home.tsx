@@ -1,43 +1,40 @@
-import {
-	Grid,
-	Typography,
-	Box,
-	TextField,
-	Button,
-	FormGroup,
-	FormControlLabel,
-	Checkbox,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { useState } from 'react';
+import { Grid, Typography, Box, TextField, Button, FormGroup, FormControlLabel, Checkbox, Fab, styled, IconButton, useTheme } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import Cart, { ChipData } from './Cart';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
-import Fab from '@mui/material/Fab';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import ShoppingHistory, { HistoryItem } from './ShoppingHistory';
+import Cart, { ChipData } from './Cart';
+import { usePersistedState } from '../functions/persistState';
+import { useContext } from 'react';
+import { ColorModeContext } from '../App';
 
 const Quota = styled(Typography)(({ theme }) => ({
 	...theme.typography.h2,
 	textAlign: 'center',
+	fontWeight: 500,
 	color: theme.palette.success.main,
 }));
 
 const NextQuota = styled(Typography)(({ theme }) => ({
 	...theme.typography.body1,
 	textAlign: 'center',
-	color: theme.palette.text.secondary,
+	color: theme.palette.text.primary,
 }));
 
 function Home() {
-	const [quota, setQuota] = useState(750);
-	const [nextQuota, setNextQuota] = useState(quota);
-	const [amount, setAmount] = useState<any>('');
-	const [enablePercentage, setEnablePercentage] = useState(true);
-	const [enableChangeQuota, setEnableChangeQuota] = useState(false);
-	const [chipData, setChipData] = useState<ChipData[]>([]);
-	const [shoppingHistory, setShoppingHistory] = useState<HistoryItem[]>([]);
+	const theme = useTheme();
+	const colorMode = useContext(ColorModeContext);
 
+	const [quota, setQuota] = usePersistedState<number>('quota', 750);
+	const [nextQuota, setNextQuota] = usePersistedState<number>('nextQuota', quota);
+	const [amount, setAmount] = usePersistedState<any>('amount', '');
+	const [enablePercentage, setEnablePercentage] = usePersistedState<boolean>('enablePercentag', true);
+	const [enableChangeQuota, setEnableChangeQuota] = usePersistedState<boolean>('enableChangeQuota', false);
+	const [chipData, setChipData] = usePersistedState<ChipData[]>('chipData', []);
+	const [shoppingHistory, setShoppingHistory] = usePersistedState<HistoryItem[]>('shoppingHistory', []);	
+	
 	const handleChipDelete = (chipToDelete: ChipData) => () => {
 		setQuota(Number(quota) + Number(chipToDelete.cost));
 		setChipData((chips) =>
@@ -84,9 +81,9 @@ function Home() {
 	const saveCart = () => {
 		const totalCost = chipData.reduce((acc, item) => acc + item.cost, 0);
 		const date = new Date();
-		const dateString = `${String(date.getDate()).padStart(2, '0')}-${String(
+		const dateString = `${String(date.getDate()).padStart(2, '0')}.${String(
 			date.getMonth() + 1
-		).padStart(2, '0')}-${date.getFullYear()}`;
+		).padStart(2, '0')}.${date.getFullYear()}`;
 		const historyItem: HistoryItem = {
 			key: Date.now(),
 			dateString,
@@ -109,17 +106,21 @@ function Home() {
 				>
 					<Grid item xs={12} mt={4}>
 						<Quota>
-							{Math.round((quota) * 100) / 100}€
+							<span style={{color: quota<0 ? 'red' : undefined}}>
+								{(Math.round((quota) * 100) / 100).toFixed(2)}€
+							</span>
 						</Quota>
 					</Grid>
 					<Grid item xs={12}>
 						<NextQuota>
 							{amount && !enableChangeQuota
-								? `Neues Kontingent: ${
-										Math.round(
+								? <>{'Neues Kontingent: '}
+									<span style={{color: nextQuota<0 ? 'red' : undefined}}>
+										{(Math.round(
 											(nextQuota) * 100
-										) / 100
-								  }€`
+										) / 100).toFixed(2)}{'€'}
+									</span>
+									</>
 								: '\u2060'}
 						</NextQuota>
 					</Grid>
@@ -152,6 +153,7 @@ function Home() {
 								onClick={() => {setQuota(amount); setAmount('');}}
 								fullWidth
 								style={{ height: '53px' }}
+								disabled={!amount}
 							>
 								update
 							</Button>
@@ -176,11 +178,11 @@ function Home() {
 									<Checkbox
 										onChange={(e) =>
 											setEnablePercentage(
-												e.target.checked
+												!enablePercentage
 											)
 										}
 										name="enablePercentage"
-										defaultChecked
+										checked={enablePercentage}
 									/>
 								}
 								label="-30% rechnen"
@@ -190,10 +192,11 @@ function Home() {
 									<Checkbox
 										onChange={(e) =>
 											setEnableChangeQuota(
-												e.target.checked
+												!enableChangeQuota
 											)
 										}
 										name="enableChangeQuota"
+										checked={enableChangeQuota}
 									/>
 								}
 								label="Kontigent ändern"
@@ -226,6 +229,15 @@ function Home() {
 					>
 						<ShoppingBasketIcon />
 					</Fab>
+					<IconButton style={{
+						position: 'absolute',
+						top: 0,
+						right: 0,
+						margin: '1rem',
+						opacity: 0.8
+					}} onClick={colorMode.toggleColorMode} color="inherit">
+						{theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+					</IconButton>
 				</Grid>
 			</Box>
 		</>
