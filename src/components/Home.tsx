@@ -1,4 +1,5 @@
-import { Grid, Typography, TextField, Button, FormGroup, FormControlLabel, Checkbox, Fab, styled, IconButton, useTheme, Card } from '@mui/material';
+import { Grid, Typography, TextField, Button, FormGroup, FormControlLabel, Checkbox, Fab, IconButton, useTheme, Card } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
@@ -142,7 +143,7 @@ function Home() {
 						<NextQuota>
 							{amount && !enableChangeQuota ? (
 								<>
-									{'Neues Kontingent: '}
+									{'New quota: '}
 									<span
 										style={{ color: nextQuota < 0 ? 'red' : undefined}}>
 										{(Math.round(nextQuota * 100) / 100).toFixed(2)}€
