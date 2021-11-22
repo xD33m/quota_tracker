@@ -1,4 +1,4 @@
-import { Grid, Typography, Box, TextField, Button, FormGroup, FormControlLabel, Checkbox, Fab, styled, IconButton, useTheme } from '@mui/material';
+import { Grid, Typography, TextField, Button, FormGroup, FormControlLabel, Checkbox, Fab, styled, IconButton, useTheme, Card } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
@@ -37,15 +37,15 @@ function Home() {
 	
 	const handleChipDelete = (chipToDelete: ChipData) => () => {
 		setQuota(Number(quota) + Number(chipToDelete.cost));
-		setChipData((chips) =>
-			chips.filter((chip) => chip.key !== chipToDelete.key)
+		setChipData((chips: ChipData[]) =>
+			chips.filter((chip: ChipData) => chip.key !== chipToDelete.key)
 		);
 	};
 
 	const handleHistoryItemDelete = (itemToDelete: HistoryItem) => () => {
-		setChipData(itemToDelete.chipData);
-		setShoppingHistory((history) =>
-			history.filter((item) => item.key !== itemToDelete.key)
+		setChipData((chips: ChipData[]) => [...chips, ...itemToDelete.chipData]);
+		setShoppingHistory((history: HistoryItem[]) =>
+			history.filter((item: HistoryItem) => item.key !== itemToDelete.key)
 		);
 	};
 
@@ -90,13 +90,40 @@ function Home() {
 			totalCost,
 			chipData,
 		};
-		setShoppingHistory((history) => [...history, historyItem]);
+		setShoppingHistory((history: HistoryItem[]) => [...history, historyItem]);
 		setChipData([]);
 	};
 
 	return (
-		<>
-			<Box mt={5} px={3}>
+		<Grid
+			container
+			spacing={0}
+			direction="column"
+			alignItems="center"
+			justifyContent="center"
+			style={{
+				minHeight: '100vh',
+				backgroundColor:
+					theme.palette.mode === 'dark'
+						? theme.palette.background.default
+						: theme.palette.grey[200],
+			}}
+		>
+			<Typography
+				variant="h2"
+				mb={5}
+				sx={{ fontWeight: '500', display: { md: 'block', xs: 'none' } }}
+			>
+				<span style={{color: theme.palette.primary.main}}>Quota</span> Tracker
+			</Typography>
+			<Card
+				sx={{
+					position: { md: 'relative' },
+					height: { md: '60vh', xs: '100vh' },
+					width: { md: '60vh' },
+					padding: { md: '2rem', xs: '1.5rem' },
+				}}
+			>
 				<Grid
 					container
 					mx="auto"
@@ -106,38 +133,38 @@ function Home() {
 				>
 					<Grid item xs={12} mt={4}>
 						<Quota>
-							<span style={{color: quota<0 ? 'red' : undefined}}>
-								{(Math.round((quota) * 100) / 100).toFixed(2)}€
+							<span style={{ color: quota < 0 ? 'red' : undefined }}>
+								{(Math.round(quota * 100) / 100).toFixed(2)}€
 							</span>
 						</Quota>
 					</Grid>
 					<Grid item xs={12}>
 						<NextQuota>
-							{amount && !enableChangeQuota
-								? <>{'Neues Kontingent: '}
-									<span style={{color: nextQuota<0 ? 'red' : undefined}}>
-										{(Math.round(
-											(nextQuota) * 100
-										) / 100).toFixed(2)}{'€'}
+							{amount && !enableChangeQuota ? (
+								<>
+									{'Neues Kontingent: '}
+									<span
+										style={{ color: nextQuota < 0 ? 'red' : undefined}}>
+										{(Math.round(nextQuota * 100) / 100).toFixed(2)}€
 									</span>
-									</>
-								: '\u2060'}
+								</>
+							) : ('\u2060')}
 						</NextQuota>
 					</Grid>
 					<Grid item mt={1} xs={7}>
 						<TextField
 							type="number"
-							label="Betrag"
+							label="Amount"
 							onChange={onAmountChange}
 							value={amount}
 							focused
 							fullWidth
 							onKeyPress={(e) => {
 								if (e.key === 'Enter') {
-									if(enableChangeQuota){
+									if (enableChangeQuota) {
 										setQuota(amount);
 										setAmount('');
-									}else{
+									} else {
 										addToCart();
 									} 
 								}
@@ -150,7 +177,10 @@ function Home() {
 								startIcon={<AddCircleIcon />}
 								color="info"
 								variant="contained"
-								onClick={() => {setQuota(amount); setAmount('');}}
+								onClick={() => {
+									setQuota(amount);
+									setAmount('');
+								}}
 								fullWidth
 								style={{ height: '53px' }}
 								disabled={!amount}
@@ -185,7 +215,7 @@ function Home() {
 										checked={enablePercentage}
 									/>
 								}
-								label="-30% rechnen"
+								label="substract 30%"
 							/>
 							<FormControlLabel
 								control={
@@ -199,7 +229,7 @@ function Home() {
 										checked={enableChangeQuota}
 									/>
 								}
-								label="Kontigent ändern"
+								label="update quota"
 							/>
 						</FormGroup>
 					</Grid>
@@ -229,18 +259,26 @@ function Home() {
 					>
 						<ShoppingBasketIcon />
 					</Fab>
-					<IconButton style={{
+					<IconButton
+						style={{
 						position: 'absolute',
 						top: 0,
 						right: 0,
+							opacity: 0.8,
 						margin: '1rem',
-						opacity: 0.8
-					}} onClick={colorMode.toggleColorMode} color="inherit">
-						{theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+						}}
+						onClick={colorMode.toggleColorMode}
+						color="inherit"
+					>
+						{theme.palette.mode === 'dark' ? (
+							<Brightness7Icon />
+						) : (
+							<Brightness4Icon />
+						)}
 					</IconButton>
 				</Grid>
-			</Box>
-		</>
+			</Card>
+		</Grid>
 	);
 }
 

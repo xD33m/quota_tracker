@@ -13,13 +13,13 @@ function App() {
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
-        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+        setMode((prevMode: string) => (prevMode === 'light' ? 'dark' : 'light'));
       },
     }),
     [setMode],
   );
 
-  const theme = useMemo(
+  const theme: any = useMemo(
     () =>
       createTheme({
         palette: {
