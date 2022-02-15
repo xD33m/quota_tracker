@@ -44,7 +44,7 @@ export default function ShoppingHistory(props: any) {
                         <ShoppingBasketIcon />
                     </HistoryListItemAvatar>
                     <ListItemText
-                        primary={`${item.dateString}: ${item.totalCost}€ (${item.chipData.length} item${item.chipData.length > 1 ? 's' : ''})`}
+                        primary={`${item.dateString}: ${item.totalCost.toFixed(2)}€ (${item.chipData.length} item${item.chipData.length > 1 ? 's' : ''})`}
                     />
                 </HistoryListItem>
             ))}
