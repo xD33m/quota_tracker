@@ -1,11 +1,11 @@
-import React, { createContext, useMemo} from 'react';
+import React, { createContext, useMemo } from 'react';
 import './App.css';
 import Home from './components/Home';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import { usePersistedState } from './functions/persistState';
 
-export const ColorModeContext = createContext({ toggleColorMode: () => {} });
+export const ColorModeContext = createContext({ toggleColorMode: () => { } });
 
 function App() {
   const [mode, setMode] = usePersistedState<'light' | 'dark'>('colorTheme', 'light');

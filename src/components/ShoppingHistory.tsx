@@ -8,16 +8,17 @@ import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import { styled } from '@mui/material/styles';
 import { ListItem } from '@mui/material';
 import { ChipData } from './Cart';
+import currency from 'currency.js';
 
 export interface HistoryItem {
     key: number;
-	dateString: string;
-	totalCost: number;
+    dateString: string;
+    totalCost: number;
     chipData: ChipData[];
 }
 
 const HistoryListItem = styled(ListItem)(({ theme }) => ({
-	margin: theme.spacing(0.5),
+    margin: theme.spacing(0.5),
     paddingLeft: 0,
 }));
 
@@ -28,14 +29,14 @@ const HistoryListItemAvatar = styled(ListItemAvatar)(({ theme }) => ({
 
 
 export default function ShoppingHistory(props: any) {
-	const { history, handleHistoryItemDelete } = props;
-	return (
+    const { history, handleHistoryItemDelete } = props;
+    return (
         <List dense>
             {history.map((item: HistoryItem, index: number) => (
                 <HistoryListItem
                     secondaryAction={
                         <IconButton edge="end" aria-label="delete" onClick={handleHistoryItemDelete(item)}>
-                            <CloseIcon/>
+                            <CloseIcon />
                         </IconButton>
                     }
                     key={item.key}
@@ -44,10 +45,10 @@ export default function ShoppingHistory(props: any) {
                         <ShoppingBasketIcon />
                     </HistoryListItemAvatar>
                     <ListItemText
-                        primary={`${item.dateString}: ${item.totalCost.toFixed(2)}€ (${item.chipData.length} item${item.chipData.length > 1 ? 's' : ''})`}
+                        primary={`${item.dateString}: ${currency(item.totalCost)}€ (${item.chipData.length} item${item.chipData.length > 1 ? 's' : ''})`}
                     />
                 </HistoryListItem>
             ))}
         </List>
-	);
+    );
 }

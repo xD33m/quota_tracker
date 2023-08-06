@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
 import { Box } from '@mui/material';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import currency from 'currency.js';
 
 export interface ChipData {
 	key: number;
@@ -15,7 +16,7 @@ const ListItem = styled('li')(({ theme }) => ({
 
 export default function Cart(props: any) {
 
-	const { handleChipDelete, chipData} = props;
+	const { handleChipDelete, chipData } = props;
 	return (
 		<Box
 			sx={{
@@ -32,7 +33,7 @@ export default function Cart(props: any) {
 					<ListItem key={data.key}>
 						<Chip
 							icon={<LocalOfferIcon />}
-							label={`${(Math.round((data.cost) * 100) / 100).toFixed(2)}€`}
+							label={`${currency(data.cost)}€`}
 							onDelete={handleChipDelete(data)}
 						/>
 					</ListItem>

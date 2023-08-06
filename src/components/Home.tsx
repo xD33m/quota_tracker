@@ -10,6 +10,7 @@ import Cart, { ChipData } from './Cart';
 import { usePersistedState } from '../functions/persistState';
 import { useContext } from 'react';
 import { ColorModeContext } from '../App';
+import currency from 'currency.js';
 
 const Quota = styled(Typography)(({ theme }) => ({
 	...theme.typography.h2,
@@ -34,8 +35,8 @@ function Home() {
 	const [enablePercentage, setEnablePercentage] = usePersistedState<boolean>('enablePercentag', true);
 	const [enableChangeQuota, setEnableChangeQuota] = usePersistedState<boolean>('enableChangeQuota', false);
 	const [chipData, setChipData] = usePersistedState<ChipData[]>('chipData', []);
-	const [shoppingHistory, setShoppingHistory] = usePersistedState<HistoryItem[]>('shoppingHistory', []);	
-	
+	const [shoppingHistory, setShoppingHistory] = usePersistedState<HistoryItem[]>('shoppingHistory', []);
+
 	const handleChipDelete = (chipToDelete: ChipData) => () => {
 		setQuota(Number(quota) + Number(chipToDelete.cost));
 		setChipData((chips: ChipData[]) =>
@@ -52,12 +53,12 @@ function Home() {
 
 	const addToCart = () => {
 		const itemPrice = enablePercentage
-			? Math.round(amount * 0.7 * 100) / 100
-			: Math.round(amount * 100) / 100;
+			? currency(amount).multiply(0.7)
+			: currency(amount);
 
 		const newChip: ChipData = {
 			key: Date.now(),
-			cost: itemPrice,
+			cost: Number(itemPrice),
 		};
 
 		setQuota(nextQuota);
@@ -74,9 +75,9 @@ function Home() {
 		setAmount(amount);
 
 		const newQuota = enablePercentage
-			? Math.round((quota - amount * 0.7) * 100) / 100
-			: Math.round((quota - amount) * 100) / 100;
-		setNextQuota(newQuota);
+			? currency(quota).subtract(amount).multiply(0.7)
+			: currency(quota - amount);
+		setNextQuota(Number(newQuota));
 	};
 
 	const saveCart = () => {
@@ -115,7 +116,7 @@ function Home() {
 				mb={5}
 				sx={{ fontWeight: '500', display: { md: 'block', xs: 'none' } }}
 			>
-				<span style={{color: theme.palette.primary.main}}>Quota</span> Tracker
+				<span style={{ color: theme.palette.primary.main }}>Konti</span> Tracker
 			</Typography>
 			<Card
 				sx={{
@@ -135,7 +136,7 @@ function Home() {
 					<Grid item xs={12} mt={4}>
 						<Quota>
 							<span style={{ color: quota < 0 ? 'red' : undefined }}>
-								{(Math.round(quota * 100) / 100).toFixed(2)}€
+								{currency(quota).toString()}€
 							</span>
 						</Quota>
 					</Grid>
@@ -145,8 +146,8 @@ function Home() {
 								<>
 									{'New quota: '}
 									<span
-										style={{ color: nextQuota < 0 ? 'red' : undefined}}>
-										{(Math.round(nextQuota * 100) / 100).toFixed(2)}€
+										style={{ color: nextQuota < 0 ? 'red' : undefined }}>
+										{currency(nextQuota).toString()}€
 									</span>
 								</>
 							) : ('\u2060')}
@@ -163,11 +164,11 @@ function Home() {
 							onKeyPress={(e) => {
 								if (e.key === 'Enter') {
 									if (enableChangeQuota) {
-										setQuota(amount);
+										setQuota(parseFloat(amount));
 										setAmount('');
 									} else {
 										addToCart();
-									} 
+									}
 								}
 							}}
 						/>
@@ -179,7 +180,7 @@ function Home() {
 								color="info"
 								variant="contained"
 								onClick={() => {
-									setQuota(amount);
+									setQuota(parseFloat(amount));
 									setAmount('');
 								}}
 								fullWidth
@@ -262,11 +263,11 @@ function Home() {
 					</Fab>
 					<IconButton
 						style={{
-						position: 'absolute',
-						top: 0,
-						right: 0,
+							position: 'absolute',
+							top: 0,
+							right: 0,
 							opacity: 0.8,
-						margin: '1rem',
+							margin: '1rem',
 						}}
 						onClick={colorMode.toggleColorMode}
 						color="inherit"
