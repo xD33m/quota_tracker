@@ -231,7 +231,7 @@ function Home() {
 										checked={enableChangeQuota}
 									/>
 								}
-								label="update quota"
+								label="update konti"
 							/>
 						</FormGroup>
 					</Grid>
