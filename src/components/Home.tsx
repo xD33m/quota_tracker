@@ -75,7 +75,7 @@ function Home() {
 		setAmount(amount);
 
 		const newQuota = enablePercentage
-			? currency(quota).subtract(amount).multiply(0.7)
+			? currency(quota).subtract(currency(amount).multiply(0.7))
 			: currency(quota - amount);
 		setNextQuota(Number(newQuota));
 	};
@@ -144,7 +144,7 @@ function Home() {
 						<NextQuota>
 							{amount && !enableChangeQuota ? (
 								<>
-									{'New quota: '}
+									{'New Konti: '}
 									<span
 										style={{ color: nextQuota < 0 ? 'red' : undefined }}>
 										{currency(nextQuota).toString()}€
